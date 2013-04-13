@@ -1,6 +1,7 @@
 
 package com.stylepopz.rest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,11 +32,12 @@ import com.singly.client.SinglyService;
 import com.singly.util.JSON;
 import com.stylepopz.common.AppSingleton;
 import com.stylepopz.common.exception.ApplicationException;
+import com.stylepopz.model.Preferences;
 import com.stylepopz.model.User;
 
 @Path("/auth")
 public class AuthenticationResource {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationResource.class); 
 
 	@Context
@@ -51,10 +53,10 @@ public class AuthenticationResource {
 			@QueryParam("profile") String profile,
 			@Context HttpServletRequest request,
 			@Context HttpServletResponse response) {
-		
+
 		if(service.equalsIgnoreCase("noservice"))
 			service = null;
-		
+
 		// store the account in the session
 		HttpSession session = request.getSession();
 		String account = (String)session.getAttribute("account");
@@ -79,7 +81,7 @@ public class AuthenticationResource {
 			}
 			else {
 				try {
-					response.sendRedirect(AppSingleton.INSTANCE.getSinglyService().getAuthenticationUrl(account, service, "http://localhost:8080/jerseywebapp/rest/auth/noservice", null));
+					response.sendRedirect(AppSingleton.INSTANCE.getSinglyService().getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/rest/auth/noservice", null));
 					return;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -92,10 +94,6 @@ public class AuthenticationResource {
 			session.setAttribute("account", account);
 		}
 
-		// get authentication services through singly api
-		List<AuthService> authServices = getAuthServices(AppSingleton.INSTANCE.getSinglyService(), account);
-		logger.info("AuthenticationResources :: AuthServices = {}", authServices);
-
 		// get if the user is previously authenticated
 		boolean authenticated = AppSingleton.INSTANCE.getSinglyService().isAuthenticated(account);
 
@@ -103,22 +101,51 @@ public class AuthenticationResource {
 		if (authenticated) {
 			Map<String, String> profiles = getProfiles(account);
 			logger.info("Profiles = {}", profiles);
-			
+
 			// persist into storage
 			User user = new User();
 			user.setId(account);
+			user.setAccessToken(AppSingleton.INSTANCE.getAccountStorage().getAccessToken(account));
 			user.setProfiles(profiles);
 			AppSingleton.INSTANCE.getDao().insertUser(user);
-			
+
 			try {
-				response.sendRedirect("http://localhost:8080/jerseywebapp/preferences.html");
+				response.sendRedirect("http://localhost:8080/stylepopz-rs/preferences.html");
 				return;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+
+		if(StringUtils.isNotBlank(account)){
+			// user already present
+			// check to see if he has set the preferences
+			if(AppSingleton.INSTANCE.getDao().isPrefSet(account)){
+				// redirect to bloggers page
+				try {
+					response.sendRedirect("http://localhost:8080/stylepopz-rs/blogger.html");
+					return;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}else{
+				// let him set his preferences
+				try {
+					response.sendRedirect("http://localhost:8080/stylepopz-rs/preferences.html");
+					return;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+		// get authentication services through singly api
+		/*List<AuthService> authServices = getAuthServices(AppSingleton.INSTANCE.getSinglyService(), account);
+		logger.info("AuthenticationResources :: AuthServices = {}", authServices);*/
+
 	}
-	
+
 	public class AuthService {
 
 		public String id;
@@ -159,7 +186,7 @@ public class AuthenticationResource {
 		}
 
 	}
-	
+
 	public List<AuthService> getAuthServices(SinglyService singlyService, String account) {
 
 		// new list of services

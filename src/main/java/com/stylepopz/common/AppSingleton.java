@@ -24,7 +24,7 @@ public enum AppSingleton {
 	public AppDAO getDao() {
 		if(dao == null){
 			logger.debug("AuthenticationResource :: creating dao");
-			this.dao = new AppDAO("localhost", 27017, "stylepopz", "users");
+			this.dao = new AppDAO("localhost", 27017, "stylepopz");
 		}
 		return dao;
 	}
