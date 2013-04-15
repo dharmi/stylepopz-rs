@@ -1,7 +1,7 @@
 
 package com.stylepopz.rest;
 
-import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,22 +20,27 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyApiException;
 import com.singly.client.SinglyService;
 import com.singly.util.JSON;
-import com.stylepopz.common.AppSingleton;
 import com.stylepopz.common.exception.ApplicationException;
-import com.stylepopz.model.Preferences;
+import com.stylepopz.dao.SPopzDAO;
 import com.stylepopz.model.User;
 
 @Path("/auth")
+@Component
 public class AuthenticationResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationResource.class); 
@@ -44,11 +49,20 @@ public class AuthenticationResource {
 	UriInfo uriInfo;
 	@Context
 	Request request;
+	
+	@Autowired
+	private SinglyService singlyService;
+	
+	@Autowired
+	private SPopzDAO dao;
+	
+	@Autowired
+	private SinglyAccountStorage accountStorage;
 
 	@GET 
 	@Produces("text/plain")
 	@Path("{service}")
-	public void processService(@PathParam("service") String service, 
+	public Response processService(@PathParam("service") String service, 
 			@QueryParam("code") String authCode,
 			@QueryParam("profile") String profile,
 			@Context HttpServletRequest request,
@@ -70,10 +84,10 @@ public class AuthenticationResource {
 				// delete the profile
 				Map<String, String> postParams = new HashMap<String, String>();
 				postParams.put("delete", profile + "@" + service);
-				postParams.put("access_token", AppSingleton.INSTANCE.getAccountStorage().getAccessToken(account));
+				postParams.put("access_token", accountStorage.getAccessToken(account));
 
 				// delete the profile service
-				AppSingleton.INSTANCE.getSinglyService().doPostApiRequest("/profiles", null, postParams);
+				singlyService.doPostApiRequest("/profiles", null, postParams);
 
 				// then redirect to authentication URL
 				// TODO:
@@ -81,8 +95,9 @@ public class AuthenticationResource {
 			}
 			else {
 				try {
-					response.sendRedirect(AppSingleton.INSTANCE.getSinglyService().getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/rest/auth/noservice", null));
-					return;
+					//response.sendRedirect(singlyService.getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/rest/auth/noservice", null));
+					return Response.seeOther(new URI(singlyService.getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/rest/auth/noservice", null))).build();
+					//return Response.status(Status.ACCEPTED).build();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -90,12 +105,12 @@ public class AuthenticationResource {
 		}
 		else if (StringUtils.isNotBlank(authCode)) {
 			// parse the authentication code and pass to complete the authentication
-			account = AppSingleton.INSTANCE.getSinglyService().completeAuthentication(authCode);
+			account = singlyService.completeAuthentication(authCode);
 			session.setAttribute("account", account);
 		}
 
 		// get if the user is previously authenticated
-		boolean authenticated = AppSingleton.INSTANCE.getSinglyService().isAuthenticated(account);
+		boolean authenticated = singlyService.isAuthenticated(account);
 
 		// if the user is authenticated get their authenticated profiles
 		if (authenticated) {
@@ -105,40 +120,39 @@ public class AuthenticationResource {
 			// persist into storage
 			User user = new User();
 			user.setId(account);
-			user.setAccessToken(AppSingleton.INSTANCE.getAccountStorage().getAccessToken(account));
+			user.setAccess_token(accountStorage.getAccessToken(account));
 			user.setProfiles(profiles);
-			AppSingleton.INSTANCE.getDao().insertUser(user);
+			dao.insertData(user);
 
-			try {
-				response.sendRedirect("http://localhost:8080/stylepopz-rs/preferences.html");
-				return;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			//response.sendRedirect("http://localhost:8080/stylepopz-rs/preferences.html");
+			return Response.status(Status.ACCEPTED).build();
 		}
 
 		if(StringUtils.isNotBlank(account)){
 			// user already present
 			// check to see if he has set the preferences
-			if(AppSingleton.INSTANCE.getDao().isPrefSet(account)){
+			if(dao.isPrefSet(account)){
 				// redirect to bloggers page
 				try {
-					response.sendRedirect("http://localhost:8080/stylepopz-rs/blogger.html");
-					return;
-				} catch (IOException e) {
+					//response.sendRedirect("http://localhost:8080/stylepopz-rs/blogger.html");
+					return Response.status(Status.CREATED).build();
+				} catch (Exception e) {
 					e.printStackTrace();
+					return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 				}
 			}else{
 				// let him set his preferences
 				try {
-					response.sendRedirect("http://localhost:8080/stylepopz-rs/preferences.html");
-					return;
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					//response.sendRedirect("http://localhost:8080/stylepopz-rs/preferences.html");
+					return Response.status(Status.ACCEPTED).build();
+				} catch (Exception e) {
 					e.printStackTrace();
+					return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 				}
 			}
 		}
+		
+		return Response.status(Status.CONFLICT).build();
 
 		// get authentication services through singly api
 		/*List<AuthService> authServices = getAuthServices(AppSingleton.INSTANCE.getSinglyService(), account);
@@ -239,12 +253,12 @@ public class AuthenticationResource {
 
 		// query parameters for the api call, add in access token
 		Map<String, String> qparams = new LinkedHashMap<String, String>();
-		qparams.put("access_token", AppSingleton.INSTANCE.getAccountStorage().getAccessToken(account));
+		qparams.put("access_token", accountStorage.getAccessToken(account));
 
 		// make an API call to get profiles data and add the JSON to the model
 		String profilesJson = "";
 		try{
-			profilesJson = AppSingleton.INSTANCE.getSinglyService().doGetApiRequest("/profiles", qparams);
+			profilesJson = singlyService.doGetApiRequest("/profiles", qparams);
 		}catch(SinglyApiException ex){
 			throw new ApplicationException("Exception Occured!! Message="+ex.getLocalizedMessage());
 		}

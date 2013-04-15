@@ -7,7 +7,7 @@ public class User implements DataObject{
 
 	// this id is the account id returned by singly
 	String id;
-	String accessToken;
+	String access_token;
 	Map<String, String> profiles = new HashMap<String, String>();
 	
 	public String getId() {
@@ -19,14 +19,13 @@ public class User implements DataObject{
 	public Map<String, String> getProfiles() {
 		return profiles;
 	}
-	public String getAccessToken() {
-		return accessToken;
-	}
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
 	public void setProfiles(Map<String, String> profiles) {
 		this.profiles = profiles;
 	}
-	
+	public String getAccess_token() {
+		return access_token;
+	}
+	public void setAccess_token(String access_token) {
+		this.access_token = access_token;
+	}
 }
