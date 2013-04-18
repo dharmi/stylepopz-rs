@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,9 @@ import org.springframework.stereotype.Component;
 import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyService;
 import com.stylepopz.dao.SPopzDAO;
+import com.stylepopz.model.Preferences;
 
-@Path("/prefs")
+@Path("/user")
 @Component
 public class AppResource {
 
@@ -49,34 +51,44 @@ public class AppResource {
 	@Autowired
 	private SinglyAccountStorage accountStorage;
 
+	/** 
+	 * returns a Json Profile
+	 * Generic for any social login
+	 * 
+	 * @param profileId
+	 * @return
+	 */
 	@GET
 	@Path("/getProfile/{profileId}")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
-	public JsonNode getProfile(@PathParam("profileId") String profileId) {
+	public String getProfile(@PathParam("profileId") String profileId) {
 
 		logger.info("fetching profile info="+profileId);
 
 		// get the profile and retrieve the access_token
-
 		String access_token = dao.getAccessToken(profileId);
+		Map<String, String> postParams = new HashMap<String, String>();
+		/*postParams.put("client_id", "");
+		postParams.put("client_secret", "");
+		postParams.put("code", "");
+		String access_token = singlyService.doGetApiRequest("/oauth/access_token", postParams);*/
 
 		// https://api.singly.com/services/twitter/tweets?access_token=my_token
-		Map<String, String> postParams = new HashMap<String, String>();
+		postParams = new HashMap<String, String>();
 		postParams.put("access_token", access_token);
 
-		// delete the profile service
-		String output = singlyService.doGetApiRequest("/services/facebook/self", postParams);
+		// invoke the profile service
+		//String output = singlyService.doGetApiRequest("/services/facebook/self", postParams);
+		String output = singlyService.doGetApiRequest("/profile", postParams);
 		logger.info("result="+output);
 
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode profile = null;
+		//Profile profile = null;
 		try {
 			//Map<String, Object> userInMap = mapper.readValue(output, new TypeReference<Map<String, Object>>() {});
 			profile = mapper.readValue(output, JsonNode.class);
-			logger.info(profile.toString());
-			
-			dao.insertJsonNode(profile, "profile");
-			
+			dao.insertProfile(profile, "profile");
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -85,16 +97,7 @@ public class AppResource {
 			e.printStackTrace();
 		}
 		
-		return profile;
-
-
-		/*Preferences pref = new Preferences();
-		Map<String, String> size = new HashMap<String, String>();
-		size.put("built", "M");
-		size.put("shoe", "7");
-		pref.setSize(size);
-		pref.setId(profileId);
-		return pref;*/
+		return output;
 	}
 
 	@DELETE
@@ -167,18 +170,31 @@ public class AppResource {
 		AppSingleton.INSTANCE.getDao().insertPreferences(pref);
 	}*/
 
-	/*@GET
-	@Path("/get")
-	@Produces(MediaType.APPLICATION_XML)
+	@GET
+	@Path("/getPrefs")
+	@Produces({MediaType.APPLICATION_XML})
 	public Preferences getPrefs() {
 		Preferences pref = new Preferences();
 		Map<String, String> size = new HashMap<String, String>();
-		size.put("built", "M");
-		size.put("shoe", "7");
+		size.put("shirt", "s");
+		size.put("pant", "m");
+		size.put("shoes", "36");
 		pref.setSize(size);
-
+		
+		Map<String, String> colors = new HashMap<String, String>();
+		colors.put("color", "skyblue");
+		pref.setSize(colors);
+		
+		Map<String, String> luxurybrands = new HashMap<String, String>();
+		luxurybrands.put("luxbrand", "Armani");
+		pref.setSize(luxurybrands);
+		
+		Map<String, String> blogger_pref = new HashMap<String, String>();
+		luxurybrands.put("url", "www.calvintage.com");
+		pref.setSize(luxurybrands);
+		
 		return pref;
-	}*/
+	}
 
 
 	/*private Response putAndGetResponse() {

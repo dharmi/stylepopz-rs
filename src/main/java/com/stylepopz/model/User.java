@@ -9,6 +9,7 @@ public class User implements DataObject{
 	String id;
 	String access_token;
 	Map<String, String> profiles = new HashMap<String, String>();
+	String code;
 	
 	public String getId() {
 		return id;
@@ -27,5 +28,11 @@ public class User implements DataObject{
 	}
 	public void setAccess_token(String access_token) {
 		this.access_token = access_token;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
 	}
 }

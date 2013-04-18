@@ -122,6 +122,7 @@ public class AuthenticationResource {
 			user.setId(account);
 			user.setAccess_token(accountStorage.getAccessToken(account));
 			user.setProfiles(profiles);
+			user.setCode(authCode);
 			dao.insertData(user);
 
 			//response.sendRedirect("http://localhost:8080/stylepopz-rs/preferences.html");

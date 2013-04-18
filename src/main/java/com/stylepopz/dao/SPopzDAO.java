@@ -17,6 +17,7 @@ import com.mongodb.DBObject;
 import com.stylepopz.common.exception.ApplicationException;
 import com.stylepopz.model.DataObject;
 import com.stylepopz.model.Preferences;
+import com.stylepopz.model.Profile;
 import com.stylepopz.model.User;
 
 @Repository
@@ -73,8 +74,8 @@ public class SPopzDAO {
 		logger.info("pref count="+count);
 		return count > 0;
 	}
-
-	public void insertJsonNode(JsonNode jsonNode, String collectionName) {
+	
+	public void insertProfile(JsonNode jsonNode, String collectionName) {
 		try{
 			if(!mongoOperation.collectionExists(collectionName))
 				mongoOperation.createCollection(collectionName);
