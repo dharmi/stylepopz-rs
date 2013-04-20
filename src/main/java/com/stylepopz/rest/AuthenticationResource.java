@@ -95,8 +95,8 @@ public class AuthenticationResource {
 			}
 			else {
 				try {
-					//response.sendRedirect(singlyService.getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/rest/auth/noservice", null));
-					return Response.seeOther(new URI(singlyService.getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/rest/auth/noservice", null))).build();
+					//response.sendRedirect(singlyService.getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/api/auth/noservice", null));
+					return Response.seeOther(new URI(singlyService.getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/api/auth/noservice", null))).build();
 					//return Response.status(Status.ACCEPTED).build();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -271,6 +271,7 @@ public class AuthenticationResource {
 			if (!profileName.equals("id")) {
 				List<String> profileIds = JSON.getStrings(root, profileName);
 				profiles.put(profileName, profileIds.get(0));
+				//profiles.put(profileIds.get(0), profileName);
 			}
 		}
 		return profiles;

@@ -11,13 +11,13 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.google.gson.JsonObject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.stylepopz.common.exception.ApplicationException;
 import com.stylepopz.model.DataObject;
 import com.stylepopz.model.Preferences;
-import com.stylepopz.model.Profile;
 import com.stylepopz.model.User;
 
 @Repository
@@ -49,10 +49,10 @@ public class SPopzDAO {
 	 * @param profileId
 	 * @return
 	 */
-	public String getAccessToken(String profileId) {
+	public String getAccessToken(String profileId, String serviceName) {
 		try{
 			if(mongoOperation.collectionExists(User.class)){
-				DBCursor dbCursor = mongoOperation.getCollection(User.class.getSimpleName().toLowerCase()).find(new BasicDBObject("profiles.facebook", profileId));
+				DBCursor dbCursor = mongoOperation.getCollection(User.class.getSimpleName().toLowerCase()).find(new BasicDBObject("profiles."+serviceName, profileId));
 				try {
 					while (dbCursor.hasNext()) {
 						DBObject cur = dbCursor.next();
@@ -80,6 +80,16 @@ public class SPopzDAO {
 			if(!mongoOperation.collectionExists(collectionName))
 				mongoOperation.createCollection(collectionName);
 			mongoOperation.save(jsonNode, collectionName);
+		}catch(DataAccessResourceFailureException ex){
+			throw new ApplicationException(ex.getLocalizedMessage());
+		}
+	}
+	
+	public void insertProfile1(JsonObject jsonObject, String collectionName) {
+		try{
+			if(!mongoOperation.collectionExists(collectionName))
+				mongoOperation.createCollection(collectionName);
+			mongoOperation.save(jsonObject, collectionName);
 		}catch(DataAccessResourceFailureException ex){
 			throw new ApplicationException(ex.getLocalizedMessage());
 		}

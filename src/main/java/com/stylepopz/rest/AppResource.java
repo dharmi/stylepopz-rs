@@ -1,7 +1,6 @@
 
 package com.stylepopz.rest;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,22 +15,29 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyService;
 import com.stylepopz.dao.SPopzDAO;
 import com.stylepopz.model.Preferences;
+import com.sun.jersey.api.NotFoundException;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiError;
+import com.wordnik.swagger.annotations.ApiErrors;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @Path("/user")
+@Api(value = "/user", description = "Operations about Users information")
+@Produces({MediaType.APPLICATION_JSON})
 @Component
 public class AppResource {
 
@@ -61,12 +67,19 @@ public class AppResource {
 	@GET
 	@Path("/getProfile/{profileId}")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
-	public String getProfile(@PathParam("profileId") String profileId) {
+	@ApiOperation(value = "Find Profile by ID", notes = "Profile id must be the ID of the social login", responseClass = "java.lang.String")
+    @ApiErrors(value = { @ApiError(code = 400, reason = "Invalid ID supplied"),
+    @ApiError(code = 404, reason = "Profile not found") })
+	public String getProfile(
+			@PathParam("profileId") String profileId) throws NotFoundException{
 
 		logger.info("fetching profile info="+profileId);
 
 		// get the profile and retrieve the access_token
-		String access_token = dao.getAccessToken(profileId);
+		String access_token = dao.getAccessToken(profileId, "facebook");
+		if(StringUtils.isEmpty(access_token)){
+			throw new NotFoundException("profile Not found");
+		}
 		Map<String, String> postParams = new HashMap<String, String>();
 		/*postParams.put("client_id", "");
 		postParams.put("client_secret", "");
@@ -81,21 +94,25 @@ public class AppResource {
 		//String output = singlyService.doGetApiRequest("/services/facebook/self", postParams);
 		String output = singlyService.doGetApiRequest("/profile", postParams);
 		logger.info("result="+output);
-
+		
+		JsonObject o = (JsonObject)new JsonParser().parse(output);
+		System.out.println("jsonobject = "+o);
+		
 		ObjectMapper mapper = new ObjectMapper();
-		JsonNode profile = null;
+		//JsonNode profile = null;
 		//Profile profile = null;
-		try {
+		//try {
 			//Map<String, Object> userInMap = mapper.readValue(output, new TypeReference<Map<String, Object>>() {});
-			profile = mapper.readValue(output, JsonNode.class);
-			dao.insertProfile(profile, "profile");
-		} catch (JsonParseException e) {
+			//profile = mapper.readValue(output, JsonNode.class);
+			//dao.insertProfile(profile, "profile");
+			dao.insertProfile1(o, "profile");
+		/*} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		return output;
 	}
@@ -171,9 +188,9 @@ public class AppResource {
 	}*/
 
 	@GET
-	@Path("/getPrefs")
+	@Path("/getPreference")
 	@Produces({MediaType.APPLICATION_XML})
-	public Preferences getPrefs() {
+	public Preferences getPreference() {
 		Preferences pref = new Preferences();
 		Map<String, String> size = new HashMap<String, String>();
 		size.put("shirt", "s");
@@ -183,11 +200,11 @@ public class AppResource {
 		
 		Map<String, String> colors = new HashMap<String, String>();
 		colors.put("color", "skyblue");
-		pref.setSize(colors);
+		pref.setColors(colors);
 		
 		Map<String, String> luxurybrands = new HashMap<String, String>();
 		luxurybrands.put("luxbrand", "Armani");
-		pref.setSize(luxurybrands);
+		pref.setLuxury_brands(luxurybrands);
 		
 		Map<String, String> blogger_pref = new HashMap<String, String>();
 		luxurybrands.put("url", "www.calvintage.com");
