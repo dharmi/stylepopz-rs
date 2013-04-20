@@ -35,8 +35,8 @@
 	<bean id="accountStorage" class="com.singly.client.InMemorySinglyAccountStorage" />
 
 	<bean id="singlyService" class="com.singly.client.SinglyServiceImpl">
-		<property name="clientId" value="write your own" />
-		<property name="clientSecret" value="write your own" />
+		<property name="clientId" value="your clienid" />
+		<property name="clientSecret" value="your clientsecret" />
 		<property name="httpClientService" ref="singlyHttpClient" />
 		<property name="accountStorage" ref="accountStorage" />
 	</bean>
