@@ -158,8 +158,10 @@
 		<!-- Singly SDK -->
 		<dependency>
 			<groupId>com.singly</groupId>
-			<artifactId>singly-sdk</artifactId>
+			<artifactId>SinglySDK</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/singly-sdk-1.0.0-SNAPSHOT.jar</systemPath>
 		</dependency>
 		
 		<!--  Swagger APIs -->

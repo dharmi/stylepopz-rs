@@ -189,7 +189,7 @@ public class AppResource {
 
 	@GET
 	@Path("/getPreference")
-	@Produces({MediaType.APPLICATION_XML})
+	@Produces({MediaType.APPLICATION_JSON})
 	public Preferences getPreference() {
 		Preferences pref = new Preferences();
 		Map<String, String> size = new HashMap<String, String>();

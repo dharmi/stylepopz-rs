@@ -3,7 +3,7 @@ package com.stylepopz.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="profile")
-public class Profile {
+public class Profile implements DataObject {
 
 	private String id;
 	private String idr;	

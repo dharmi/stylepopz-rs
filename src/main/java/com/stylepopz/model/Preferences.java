@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="preferences")
-public class Preferences {
+public class Preferences implements DataObject {
 
 	// this id is the account (user.id)
 	String id;
