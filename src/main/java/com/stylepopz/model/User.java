@@ -3,12 +3,19 @@ package com.stylepopz.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class User implements DataObject{
 
 	// this id is the account id returned by singly
+	@Id
 	String id;
 	String access_token;
-	Map<String, String> profiles = new HashMap<String, String>();
+	String socialProfile;
+	String socialProfileId;
 	String code;
 	
 	public String getId() {
@@ -16,12 +23,6 @@ public class User implements DataObject{
 	}
 	public void setId(String id) {
 		this.id = id;
-	}
-	public Map<String, String> getProfiles() {
-		return profiles;
-	}
-	public void setProfiles(Map<String, String> profiles) {
-		this.profiles = profiles;
 	}
 	public String getAccess_token() {
 		return access_token;
@@ -34,5 +35,17 @@ public class User implements DataObject{
 	}
 	public void setCode(String code) {
 		this.code = code;
+	}
+	public String getSocialProfile() {
+		return socialProfile;
+	}
+	public void setSocialProfile(String socialProfile) {
+		this.socialProfile = socialProfile;
+	}
+	public String getSocialProfileId() {
+		return socialProfileId;
+	}
+	public void setSocialProfileId(String socialProfileId) {
+		this.socialProfileId = socialProfileId;
 	}
 }

@@ -1,6 +1,6 @@
 package com.stylepopz.model;
 
-import java.util.Map;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -9,14 +9,14 @@ public class Preferences implements DataObject {
 
 	// this id is the account (user.id)
 	String id;
-	Map<String, String> size;
-	Map<String, String> colors;
-	Map<String, String> print;
-	Map<String, String> luxury_brands;
-	Map<String, String> hi_street_brands;
-	Map<String, String> fast_fashion_brands;
-	Map<String, String> indie_designers;
-	Map<String, String> blogger_preferences;
+	List<KeyValuePair> size;
+	List<KeyValuePair> colors;
+	List<KeyValuePair> print;
+	List<KeyValuePair> luxury_brands;
+	List<KeyValuePair> hi_street_brands;
+	List<KeyValuePair> fast_fashion_brands;
+	List<KeyValuePair> indie_designers;
+	List<KeyValuePair> blogger_preferences;
 	
 	public String getId() {
 		return id;
@@ -24,54 +24,53 @@ public class Preferences implements DataObject {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public Map<String, String> getSize() {
+	public List<KeyValuePair> getSize() {
 		return size;
 	}
-	public void setSize(Map<String, String> size) {
+	public void setSize(List<KeyValuePair> size) {
 		this.size = size;
 	}
-	public Map<String, String> getColors() {
+	public List<KeyValuePair> getColors() {
 		return colors;
 	}
-	public void setColors(Map<String, String> colors) {
+	public void setColors(List<KeyValuePair> colors) {
 		this.colors = colors;
 	}
-	public Map<String, String> getPrint() {
+	public List<KeyValuePair> getPrint() {
 		return print;
 	}
-	public void setPrint(Map<String, String> print) {
+	public void setPrint(List<KeyValuePair> print) {
 		this.print = print;
 	}
-	public Map<String, String> getLuxury_brands() {
+	public List<KeyValuePair> getLuxury_brands() {
 		return luxury_brands;
 	}
-	public void setLuxury_brands(Map<String, String> luxury_brands) {
+	public void setLuxury_brands(List<KeyValuePair> luxury_brands) {
 		this.luxury_brands = luxury_brands;
 	}
 
-	public Map<String, String> getHi_street_brands() {
+	public List<KeyValuePair> getHi_street_brands() {
 		return hi_street_brands;
 	}
-	public void setHi_street_brands(Map<String, String> hi_street_brands) {
+	public void setHi_street_brands(List<KeyValuePair> hi_street_brands) {
 		this.hi_street_brands = hi_street_brands;
 	}
-	public Map<String, String> getFast_fashion_brands() {
+	public List<KeyValuePair> getFast_fashion_brands() {
 		return fast_fashion_brands;
 	}
-	public void setFast_fashion_brands(Map<String, String> fast_fashion_brands) {
+	public void setFast_fashion_brands(List<KeyValuePair> fast_fashion_brands) {
 		this.fast_fashion_brands = fast_fashion_brands;
 	}
-	public Map<String, String> getIndie_designers() {
+	public List<KeyValuePair> getIndie_designers() {
 		return indie_designers;
 	}
-	public void setIndie_designers(Map<String, String> indie_designers) {
+	public void setIndie_designers(List<KeyValuePair> indie_designers) {
 		this.indie_designers = indie_designers;
 	}
-	public Map<String, String> getBlogger_preferences() {
+	public List<KeyValuePair> getBlogger_preferences() {
 		return blogger_preferences;
 	}
-	public void setBlogger_preferences(Map<String, String> blogger_preferences) {
+	public void setBlogger_preferences(List<KeyValuePair> blogger_preferences) {
 		this.blogger_preferences = blogger_preferences;
 	}
-	
 }

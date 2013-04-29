@@ -1,7 +1,9 @@
 
 package com.stylepopz.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.DELETE;
@@ -26,14 +28,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyService;
-import com.stylepopz.dao.SPopzDAO;
+import com.stylepopz.model.KeyValuePair;
 import com.stylepopz.model.Preferences;
+import com.stylepopz.service.SpopzService;
 import com.sun.jersey.api.NotFoundException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiError;
 import com.wordnik.swagger.annotations.ApiErrors;
 import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+
+import flexjson.JSONSerializer;
 
 @Path("/user")
 @Api(value = "/user", description = "Operations about Users information")
@@ -52,7 +56,7 @@ public class AppResource {
 	private SinglyService singlyService;
 
 	@Autowired
-	private SPopzDAO dao;
+	private SpopzService spopzService;
 
 	@Autowired
 	private SinglyAccountStorage accountStorage;
@@ -73,10 +77,10 @@ public class AppResource {
 	public String getProfile(
 			@PathParam("profileId") String profileId) throws NotFoundException{
 
-		logger.info("fetching profile info="+profileId);
-
+		logger.debug("fetching profile info="+profileId);
+		
 		// get the profile and retrieve the access_token
-		String access_token = dao.getAccessToken(profileId, "facebook");
+		String access_token = spopzService.getAccessToken(profileId, "facebook");
 		if(StringUtils.isEmpty(access_token)){
 			throw new NotFoundException("profile Not found");
 		}
@@ -93,7 +97,7 @@ public class AppResource {
 		// invoke the profile service
 		//String output = singlyService.doGetApiRequest("/services/facebook/self", postParams);
 		String output = singlyService.doGetApiRequest("/profile", postParams);
-		logger.info("result="+output);
+		logger.debug("result="+output);
 		
 		JsonObject o = (JsonObject)new JsonParser().parse(output);
 		System.out.println("jsonobject = "+o);
@@ -105,7 +109,7 @@ public class AppResource {
 			//Map<String, Object> userInMap = mapper.readValue(output, new TypeReference<Map<String, Object>>() {});
 			//profile = mapper.readValue(output, JsonNode.class);
 			//dao.insertProfile(profile, "profile");
-			dao.insertProfile1(o, "profile");
+			spopzService.insertProfile(o, "profile");
 		/*} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -116,6 +120,12 @@ public class AppResource {
 		
 		return output;
 	}
+	
+	@GET
+	@Path("/getProfile")
+	public Response showMessageForEmptyProfile(){
+		return Response.serverError().entity("profileId cannot be blank").build();
+	}
 
 	@DELETE
 	@Path("/del/{service}/{profileId}/{account}")
@@ -124,7 +134,7 @@ public class AppResource {
 			@PathParam("profileId") String profileId,
 			@PathParam("acccount") String account) {
 
-		logger.info("deleting profileid="+profileId);
+		logger.debug("deleting profileid="+profileId);
 
 		// delete the profile
 		Map<String, String> postParams = new HashMap<String, String>();
@@ -134,7 +144,7 @@ public class AppResource {
 		// delete the profile service
 		singlyService.doPostApiRequest("/profiles", null, postParams);
 
-		logger.info("deleted profile id="+profileId);
+		logger.debug("deleted profile id="+profileId);
 
 		return Response.ok().build();
 	}
@@ -188,29 +198,71 @@ public class AppResource {
 	}*/
 
 	@GET
-	@Path("/getPreference")
-	@Produces({MediaType.APPLICATION_JSON})
-	public Preferences getPreference() {
+	@Path("/getPreference/{profileId}")
+	public Response getPreference(@PathParam("profileId") String profileId) {
+		
+		if(profileId == null || profileId.trim().length() == 0) {
+	        return Response.serverError().entity("profileId cannot be blank").build();
+	    }
+
 		Preferences pref = new Preferences();
-		Map<String, String> size = new HashMap<String, String>();
-		size.put("shirt", "s");
-		size.put("pant", "m");
-		size.put("shoes", "36");
+		List<KeyValuePair> size = new ArrayList<KeyValuePair>();
+		size.add(new KeyValuePair("shirt", "s"));
+		size.add(new KeyValuePair("pant", "m"));
+		size.add(new KeyValuePair("shoes", "36"));
 		pref.setSize(size);
 		
-		Map<String, String> colors = new HashMap<String, String>();
-		colors.put("color", "skyblue");
+		List<KeyValuePair> colors = new ArrayList<KeyValuePair>();
+		colors.add(new KeyValuePair("color", "skyblue"));
+		colors.add(new KeyValuePair("color", "purple"));
 		pref.setColors(colors);
 		
-		Map<String, String> luxurybrands = new HashMap<String, String>();
-		luxurybrands.put("luxbrand", "Armani");
+		List<KeyValuePair> prints = new ArrayList<KeyValuePair>();
+		prints.add(new KeyValuePair("print", "zebra"));
+		prints.add(new KeyValuePair("print", "flowery"));
+		pref.setPrint(colors);
+		
+		List<KeyValuePair> luxurybrands = new ArrayList<KeyValuePair>();
+		luxurybrands.add(new KeyValuePair("luxbrand", "armani"));
+		luxurybrands.add(new KeyValuePair("luxbrand", "Gucci"));
 		pref.setLuxury_brands(luxurybrands);
 		
-		Map<String, String> blogger_pref = new HashMap<String, String>();
-		luxurybrands.put("url", "www.calvintage.com");
-		pref.setSize(luxurybrands);
+		List<KeyValuePair> hi_street_brands = new ArrayList<KeyValuePair>();
+		hi_street_brands.add(new KeyValuePair("hibrand", "brand 1"));
+		hi_street_brands.add(new KeyValuePair("hibrand", "brand 2"));
+		pref.setHi_street_brands(hi_street_brands);
 		
-		return pref;
+		List<KeyValuePair> fast_fashion_brands = new ArrayList<KeyValuePair>();
+		fast_fashion_brands.add(new KeyValuePair("fastfash", "express"));
+		fast_fashion_brands.add(new KeyValuePair("fastfash", "gap"));
+		pref.setFast_fashion_brands(fast_fashion_brands);
+		
+		List<KeyValuePair> indie_designers = new ArrayList<KeyValuePair>();
+		indie_designers.add(new KeyValuePair("indie", "Sonas Jeans"));
+		indie_designers.add(new KeyValuePair("indie", "Rachel Zoe"));
+		pref.setIndie_designers(indie_designers);
+		
+		List<KeyValuePair> blogger_pref = new ArrayList<KeyValuePair>();
+		blogger_pref.add(new KeyValuePair("url", "www.calvintage.com"));
+		blogger_pref.add(new KeyValuePair("url", "www.sfstyle.com"));
+		blogger_pref.add(new KeyValuePair("url", "www.karinala.com"));
+		pref.setBlogger_preferences(blogger_pref);
+		
+		pref.setId(profileId);
+		
+		JSONSerializer ser = new JSONSerializer();
+		ser.prettyPrint(true);
+		ser.exclude("*.class");
+		String str = ser.deepSerialize(pref);
+		
+		
+		return Response.ok(str, MediaType.APPLICATION_JSON).build();
+	}
+	
+	@GET
+	@Path("/getPreference")
+	public Response showMessageForEmptyPreference(){
+		return Response.serverError().entity("profileId cannot be blank").build();
 	}
 
 

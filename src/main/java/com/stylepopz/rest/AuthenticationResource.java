@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -36,8 +39,8 @@ import com.singly.client.SinglyApiException;
 import com.singly.client.SinglyService;
 import com.singly.util.JSON;
 import com.stylepopz.common.exception.ApplicationException;
-import com.stylepopz.dao.SPopzDAO;
 import com.stylepopz.model.User;
+import com.stylepopz.service.SpopzService;
 
 @Path("/auth")
 @Component
@@ -54,7 +57,7 @@ public class AuthenticationResource {
 	private SinglyService singlyService;
 	
 	@Autowired
-	private SPopzDAO dao;
+	private SpopzService spopzService;
 	
 	@Autowired
 	private SinglyAccountStorage accountStorage;
@@ -95,9 +98,8 @@ public class AuthenticationResource {
 			}
 			else {
 				try {
-					//response.sendRedirect(singlyService.getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/api/auth/noservice", null));
-					return Response.seeOther(new URI(singlyService.getAuthenticationUrl(account, service, "http://localhost:8080/stylepopz-rs/api/auth/noservice", null))).build();
-					//return Response.status(Status.ACCEPTED).build();
+					return Response.seeOther(new URI(singlyService.getAuthenticationUrl(account, service, 
+							"http://"+request.getServerName()+":"+request.getServerPort()+"/api/auth/noservice", null))).build();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -115,27 +117,39 @@ public class AuthenticationResource {
 		// if the user is authenticated get their authenticated profiles
 		if (authenticated) {
 			Map<String, String> profiles = getProfiles(account);
-			logger.info("Profiles = {}", profiles);
-
+			logger.debug("Profiles = {}", profiles);
+			
 			// persist into storage
 			User user = new User();
 			user.setId(account);
 			user.setAccess_token(accountStorage.getAccessToken(account));
-			user.setProfiles(profiles);
 			user.setCode(authCode);
-			dao.insertData(user);
+			
+			Set<Map.Entry<String, String>> entrySet = profiles.entrySet();
+		    Iterator<Map.Entry<String, String>> i = entrySet.iterator();
+		    String profileId = "";
+		    while(i.hasNext()){
+		        Map.Entry<String, String> element = i.next();
+		        logger.debug("Key: "+element.getKey()+" ,value: "+element.getValue());
+		        user.setSocialProfile(element.getKey());
+		        user.setSocialProfileId(element.getValue());
+		        profileId = element.getValue();
+		    }
 
-			//response.sendRedirect("http://localhost:8080/stylepopz-rs/preferences.html");
-			return Response.status(Status.ACCEPTED).build();
+		    
+			spopzService.addUser(user);
+
+			// show preferences page
+			return Response.ok("{'profileId':"+profileId+"}", MediaType.APPLICATION_JSON).build();
+
 		}
 
 		if(StringUtils.isNotBlank(account)){
 			// user already present
 			// check to see if he has set the preferences
-			if(dao.isPrefSet(account)){
-				// redirect to bloggers page
+			if(spopzService.isPrefSet(account)){
 				try {
-					//response.sendRedirect("http://localhost:8080/stylepopz-rs/blogger.html");
+					// show Blogger page
 					return Response.status(Status.CREATED).build();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -154,10 +168,6 @@ public class AuthenticationResource {
 		}
 		
 		return Response.status(Status.CONFLICT).build();
-
-		// get authentication services through singly api
-		/*List<AuthService> authServices = getAuthServices(AppSingleton.INSTANCE.getSinglyService(), account);
-		logger.info("AuthenticationResources :: AuthServices = {}", authServices);*/
 
 	}
 
