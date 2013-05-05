@@ -14,8 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonObject;
-import com.stylepopz.model.Profile;
-import com.stylepopz.model.User;
+import com.stylepopz.model.Preference;
+import com.stylepopz.model.entity.Preferences;
+import com.stylepopz.model.entity.Profile;
+import com.stylepopz.model.entity.User;
+
+import flexjson.JSONSerializer;
 
 @Service
 public class SpopzServiceImpl implements SpopzService {
@@ -25,7 +29,6 @@ public class SpopzServiceImpl implements SpopzService {
     @PersistenceContext
     EntityManager em;
         
-    @Transactional
     public void addUser(User user) {
 
     	User _user = null;
@@ -44,6 +47,18 @@ public class SpopzServiceImpl implements SpopzService {
     }
 
     @Transactional
+	public void upsertPreference(Preference pref, String jsonString) {
+    	
+    	Preferences prefEntity = new Preferences(pref.getId(), jsonString);
+		
+		if(pref != null && em.find(Preferences.class, pref.getId()) == null){
+    		em.persist(prefEntity);
+    	}else{	// update
+    		em.merge(prefEntity);
+    	}
+	}
+
+    @Transactional
     public List<User> listUsers() {
         CriteriaQuery<User> c = em.getCriteriaBuilder().createQuery(User.class);
         c.from(User.class);
@@ -54,6 +69,13 @@ public class SpopzServiceImpl implements SpopzService {
     public List<Profile> listProfiles() {
         CriteriaQuery<Profile> c = em.getCriteriaBuilder().createQuery(Profile.class);
         c.from(Profile.class);
+        return em.createQuery(c).getResultList();
+    }
+    
+    @Transactional
+    public List<Preferences> listPreferences() {
+        CriteriaQuery<Preferences> c = em.getCriteriaBuilder().createQuery(Preferences.class);
+        c.from(Preferences.class);
         return em.createQuery(c).getResultList();
     }
 
@@ -89,5 +111,4 @@ public class SpopzServiceImpl implements SpopzService {
 		em.persist(services);
 	}
 
-    
 }

@@ -1,0 +1,22 @@
+<html>
+<body>
+	<h1>setPreferences Testing</h1>
+ 
+	<form action="api/user/setPreference" method="post">
+		<p>
+			id : <input name="profileId"><br>
+			json : <textarea  rows="10" cols="150" name="preference">{"id":"4343","size":[{"selected":"Y","url":"http://www.google.com","shirt":"s"},{"pant":"m","selected":"Y","url":"http://www.google.com"},{"shoes":"7","selected":"N","url":"http://www.google.com"}],"colors":[{"selected":"Y","color":"skyblue","url":"http://www.google.com"},{"selected":"Y","color":"purple","url":"http://www.google.com"}],"prints":[{"selected":"Y","color":"skyblue","url":"http://www.google.com"},{"selected":"Y","color":"purple","url":"http://www.google.com"}],"luxurybrands":[{"selected":"Y","luxbrand":"Armani","url":"http://www.google.com"},{"selected":"N","luxbrand":"Gucci","url":"http://www.google.com"}],"hi_street_brands":[{"selected":"Y","hibrand":"brand 1","url":"http://www.google.com"},{"selected":"N","hibrand":"brand 2","url":"http://www.google.com"}],"fast_fashion_brands":[{"selected":"Y","hibrand":"brand 1","url":"http://www.google.com"},{"selected":"N","hibrand":"brand 2","url":"http://www.google.com"}],"indie_designers":[{"selected":"Y","indie":"sonas jeans","url":"http://www.google.com"}],"blogger_preferences":[{"selected":"Y","url":"http://www.calvintage.com"}]}</textarea>
+		</p>
+		<input type="submit" value="Add Preference" />
+	</form>
+	
+	<h3></h3>
+	<form action="api/user/setPreference/1234" method="post">
+		<p>
+			json : <textarea rows="10" cols="150" name="preference">{"id":"4343","size":[{"selected":"Y","url":"http://www.google.com","shirt":"s"},{"pant":"m","selected":"Y","url":"http://www.google.com"},{"shoes":"7","selected":"N","url":"http://www.google.com"}],"colors":[{"selected":"Y","color":"skyblue","url":"http://www.google.com"},{"selected":"Y","color":"purple","url":"http://www.google.com"}],"prints":[{"selected":"Y","color":"skyblue","url":"http://www.google.com"},{"selected":"Y","color":"purple","url":"http://www.google.com"}],"luxurybrands":[{"selected":"Y","luxbrand":"Armani","url":"http://www.google.com"},{"selected":"N","luxbrand":"Gucci","url":"http://www.google.com"}],"hi_street_brands":[{"selected":"Y","hibrand":"brand 1","url":"http://www.google.com"},{"selected":"N","hibrand":"brand 2","url":"http://www.google.com"}],"fast_fashion_brands":[{"selected":"Y","hibrand":"brand 1","url":"http://www.google.com"},{"selected":"N","hibrand":"brand 2","url":"http://www.google.com"}],"indie_designers":[{"selected":"Y","indie":"sonas jeans","url":"http://www.google.com"}],"blogger_preferences":[{"selected":"Y","url":"http://www.calvintage.com"}]}</textarea>
+		</p>
+		<input type="submit" value="Add Preference with id" />
+	</form>
+ 
+</body>
+</html>

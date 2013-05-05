@@ -39,7 +39,7 @@ import com.singly.client.SinglyApiException;
 import com.singly.client.SinglyService;
 import com.singly.util.JSON;
 import com.stylepopz.common.exception.ApplicationException;
-import com.stylepopz.model.User;
+import com.stylepopz.model.entity.User;
 import com.stylepopz.service.SpopzService;
 
 @Path("/auth")
@@ -99,7 +99,7 @@ public class AuthenticationResource {
 			else {
 				try {
 					return Response.seeOther(new URI(singlyService.getAuthenticationUrl(account, service, 
-							"http://"+request.getServerName()+":"+request.getServerPort()+"/api/auth/noservice", null))).build();
+							"http://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/api/auth/noservice", null))).build();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -117,7 +117,7 @@ public class AuthenticationResource {
 		// if the user is authenticated get their authenticated profiles
 		if (authenticated) {
 			Map<String, String> profiles = getProfiles(account);
-			logger.debug("Profiles = {}", profiles);
+			//logger.debug("Profiles = {}", profiles);
 			
 			// persist into storage
 			User user = new User();
@@ -130,7 +130,7 @@ public class AuthenticationResource {
 		    String profileId = "";
 		    while(i.hasNext()){
 		        Map.Entry<String, String> element = i.next();
-		        logger.debug("Key: "+element.getKey()+" ,value: "+element.getValue());
+		        //logger.debug("Key: "+element.getKey()+" ,value: "+element.getValue());
 		        user.setSocialProfile(element.getKey());
 		        user.setSocialProfileId(element.getValue());
 		        profileId = element.getValue();

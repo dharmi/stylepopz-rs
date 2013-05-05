@@ -3,7 +3,7 @@ package com.stylepopz.service;
 
 import java.util.List;
 
-import com.stylepopz.model.Person;
+import com.stylepopz.model.entity.Person;
 
 public interface PersonService {
     

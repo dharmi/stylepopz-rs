@@ -19,8 +19,8 @@
 	<bean id="accountStorage" class="com.singly.client.InMemorySinglyAccountStorage" />
 
 	<bean id="singlyService" class="com.singly.client.SinglyServiceImpl">
-		<property name="clientId" value="7cf4f84679c23395bf14472844c1c65b" />
-		<property name="clientSecret" value="4403db0e091c06326c6cc19bf02ffbba" />
+		<property name="clientId" value="pls update yours" />
+		<property name="clientSecret" value="pls update yours" />
 		<property name="httpClientService" ref="singlyHttpClient" />
 		<property name="accountStorage" ref="accountStorage" />
 	</bean>
@@ -55,24 +55,8 @@
             </property>
         </bean>
     </beans>
-    
-    <beans profile="prod">
-        <jdbc:embedded-database id="dataSource"/>        
-        <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-            <property name="dataSource" ref="dataSource"/>
-            <property name="jpaVendorAdapter">
-                <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
-            </property>
-            <property name="jpaProperties">
-                <props>
-                    <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
-                    <prop key="hibernate.hbm2ddl.auto">update</prop>
-                </props>
-            </property>
-        </bean>
-    </beans>
 
-    <!-- <beans profile="prod">
+    <beans profile="prod">
         <bean class="java.net.URI" id="dbUrl">
             <constructor-arg value="#{systemEnvironment['DATABASE_URL']}"/>
         </bean>
@@ -92,11 +76,10 @@
                 <props>
                     <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
                     <prop key="hibernate.show_sql">true</prop>
-                    change this to 'verify' before running as a production app
                     <prop key="hibernate.hbm2ddl.auto">update</prop>
                 </props>
             </property>
         </bean>
-    </beans> -->
+    </beans>
 
 </beans>

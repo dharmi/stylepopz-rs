@@ -3,7 +3,7 @@ package com.stylepopz.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.stylepopz.model.Person;
+import com.stylepopz.model.entity.Person;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
