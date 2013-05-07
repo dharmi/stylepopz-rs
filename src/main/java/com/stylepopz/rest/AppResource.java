@@ -37,15 +37,10 @@ import com.stylepopz.model.entity.Profile;
 import com.stylepopz.model.entity.User;
 import com.stylepopz.service.SpopzService;
 import com.sun.jersey.api.NotFoundException;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiError;
-import com.wordnik.swagger.annotations.ApiErrors;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import flexjson.JSONSerializer;
 
 @Path("/user")
-@Api(value = "/user", description = "Operations about Users information")
 @Produces({MediaType.APPLICATION_JSON})
 @Component
 public class AppResource {
@@ -76,9 +71,6 @@ public class AppResource {
 	@GET
 	@Path("/getProfile/{profileId}")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
-	@ApiOperation(value = "Find Profile by ID", notes = "Profile id must be the ID of the social login", responseClass = "java.lang.String")
-	@ApiErrors(value = { @ApiError(code = 400, reason = "Invalid ID supplied"),
-			@ApiError(code = 404, reason = "Profile not found") })
 	public String getProfile(@PathParam("profileId") String profileId) throws NotFoundException{
 
 		logger.debug("fetching profile info="+profileId);
@@ -335,7 +327,7 @@ public class AppResource {
 
 		List<Preferences> listOfPreferences = spopzService.listPreferences();
 		List<Profile> listOfProfiles = spopzService.listProfiles();
-		List<User> listOfUsers = spopzService.listUsers(); 
+		List<User> listOfUsers = spopzService.listUsers();  
 		
 		return new StringBuffer("Preferences:::").append(new JSONSerializer().deepSerialize(listOfPreferences)).append("Profiles:::").
 		append(new JSONSerializer().deepSerialize(listOfProfiles)).append("Users:::").

@@ -145,12 +145,12 @@
 		</dependency>
 		
 		<!--  Swagger APIs -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.wordnik</groupId>
 			<artifactId>swagger-jaxrs_2.9.1</artifactId>
 			<version>1.2.1</version>
 			<scope>compile</scope>
-		</dependency>
+		</dependency> -->
 
 
 		<!-- Logging dependencies -->
@@ -204,11 +204,11 @@
             <artifactId>hsqldb</artifactId>
             <version>2.2.8</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.1-901-1.jdbc4</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
