@@ -78,6 +78,19 @@ public class SpopzServiceImpl implements SpopzService {
         c.from(Preferences.class);
         return em.createQuery(c).getResultList();
     }
+    
+    @Transactional
+    public Preferences listPreference(String profileId) {
+        CriteriaQuery<Preferences> c = em.getCriteriaBuilder().createQuery(Preferences.class);
+        Root<Preferences> pref = c.from(Preferences.class);
+        c.where(pref.get("id").in(profileId));
+        
+        
+        List<Preferences> prefList = em.createQuery(c).getResultList();
+        if ( prefList != null && prefList.size() > 0 )
+        	return prefList.get(0);
+        return null;
+    }
 
     @Transactional
     public void removeUser(Integer id) {

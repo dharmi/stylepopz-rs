@@ -1,7 +1,6 @@
 
 package com.stylepopz.rest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -176,12 +175,10 @@ public class AppResource {
 	@POST
 	@Path("/setPreference")
 	public Response setPreference(
-			@FormParam("profileId") String profileId,
 			@FormParam("preference") String preference) {
 
 		Gson gson = new Gson();
 		Preference pref = gson.fromJson(preference, Preference.class);
-		pref.setId(profileId);
 
 		spopzService.upsertPreference(pref, preference);
 
@@ -190,7 +187,7 @@ public class AppResource {
 		return Response.ok(str, MediaType.APPLICATION_JSON).build();
 	}
 
-	@GET
+	/*@GET
 	@Path("/getPreference/{profileId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Preference getPreference(@PathParam("profileId") String profileId) {
@@ -313,6 +310,18 @@ public class AppResource {
 		pref.setId(profileId);
 
 		return pref;
+	}*/
+	
+	@GET
+	@Path("/getPreference/{profileId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Preferences getPreference(@PathParam("profileId") String profileId) {
+		Preferences pref = spopzService.listPreference(profileId);
+		if(pref != null)
+			return pref;
+		else{
+			return new Preferences();
+		}
 	}
 
 	@GET
