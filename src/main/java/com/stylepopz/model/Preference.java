@@ -1,23 +1,41 @@
 package com.stylepopz.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name="preferences")
 public class Preference implements DataObject {
 
 	// this id is the account (user.id)
 	String id;
-	List<Map<String, String>> size;
-	List<Map<String, String>> colors;
-	List<Map<String, String>> prints;
-	List<Map<String, String>> luxurybrands;
-	List<Map<String, String>> hi_street_brands;
-	List<Map<String, String>> fast_fashion_brands;
-	List<Map<String, String>> indie_designers;
-	List<Map<String, String>> blogger_preferences;
+	Sizes sizes = new Sizes();
+	List<Map<String, String>> colors = new ArrayList<Map<String, String>>();
+	List<Map<String, String>> prints = new ArrayList<Map<String, String>>();
+	List<Map<String, String>> luxuryBrands = new ArrayList<Map<String, String>>();
+	List<Map<String, String>> hiStreetBrands = new ArrayList<Map<String, String>>();
+	List<Map<String, String>> fastFashionBrands = new ArrayList<Map<String, String>>();
+	List<Map<String, String>> indieDesigners = new ArrayList<Map<String, String>>();
+	List<Map<String, String>> bloggerPreferences = new ArrayList<Map<String, String>>();
+	
+	public Preference(){
+		Map<String, String> selected = new HashMap<String, String>();
+		selected.put("selected", "N");
+		List<Map<String, String>> map = new ArrayList<Map<String,String>>();
+		map.add(selected);
+		
+		sizes.setShirts(map);
+		sizes.setPants(map);
+		sizes.setShoes(map);
+		
+		colors.add(selected);
+		prints.add(selected);
+		luxuryBrands.add(selected);
+		hiStreetBrands.add(selected);
+		fastFashionBrands.add(selected);
+		indieDesigners.add(selected);
+		bloggerPreferences.add(selected);
+	}
 	
 	public String getId() {
 		return id;
@@ -25,12 +43,7 @@ public class Preference implements DataObject {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public List<Map<String, String>> getSize() {
-		return size;
-	}
-	public void setSize(List<Map<String, String>> size) {
-		this.size = size;
-	}
+	
 	public List<Map<String, String>> getColors() {
 		return colors;
 	}
@@ -43,36 +56,43 @@ public class Preference implements DataObject {
 	public void setPrints(List<Map<String, String>> prints) {
 		this.prints = prints;
 	}
-	public List<Map<String, String>> getLuxurybrands() {
-		return luxurybrands;
+	public List<Map<String, String>> getLuxuryBrands() {
+		return luxuryBrands;
 	}
-	public void setLuxurybrands(List<Map<String, String>> luxury_brands) {
-		this.luxurybrands = luxury_brands;
+	public void setLuxuryBrands(List<Map<String, String>> luxuryBrands) {
+		this.luxuryBrands = luxuryBrands;
 	}
-
-	public List<Map<String, String>> getHi_street_brands() {
-		return hi_street_brands;
+	public List<Map<String, String>> getHiStreetBrands() {
+		return hiStreetBrands;
 	}
-	public void setHi_street_brands(List<Map<String, String>> hi_street_brands) {
-		this.hi_street_brands = hi_street_brands;
+	public void setHiStreetBrands(List<Map<String, String>> hiStreetBrands) {
+		this.hiStreetBrands = hiStreetBrands;
 	}
-	public List<Map<String, String>> getFast_fashion_brands() {
-		return fast_fashion_brands;
+	public List<Map<String, String>> getFastFashionBrands() {
+		return fastFashionBrands;
 	}
-	public void setFast_fashion_brands(List<Map<String, String>> fast_fashion_brands) {
-		this.fast_fashion_brands = fast_fashion_brands;
+	public void setFastFashionBrands(List<Map<String, String>> fastFashionBrands) {
+		this.fastFashionBrands = fastFashionBrands;
 	}
-	public List<Map<String, String>> getIndie_designers() {
-		return indie_designers;
+	public List<Map<String, String>> getIndieDesigners() {
+		return indieDesigners;
 	}
-	public void setIndie_designers(List<Map<String, String>> indie_designers) {
-		this.indie_designers = indie_designers;
+	public void setIndieDesigners(List<Map<String, String>> indieDesigners) {
+		this.indieDesigners = indieDesigners;
 	}
-	public List<Map<String, String>> getBlogger_preferences() {
-		return blogger_preferences;
+	public List<Map<String, String>> getBloggerPreferences() {
+		return bloggerPreferences;
 	}
-	public void setBlogger_preferences(List<Map<String, String>> blogger_preferences) {
-		this.blogger_preferences = blogger_preferences;
+	public void setBloggerPreferences(List<Map<String, String>> bloggerPreferences) {
+		this.bloggerPreferences = bloggerPreferences;
+	}
+	public Sizes getSizes() {
+		return sizes;
+	}
+	public void setSizes(Sizes sizes) {
+		this.sizes = sizes;
 	}
 
 }
+
+

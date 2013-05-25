@@ -30,8 +30,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyService;
+import com.stylepopz.model.IntermediatePreference;
 import com.stylepopz.model.Preference;
-import com.stylepopz.model.entity.Preferences;
+import com.stylepopz.model.entity.PreferenceAsJson;
 import com.stylepopz.model.entity.Profile;
 import com.stylepopz.model.entity.User;
 import com.stylepopz.service.SpopzService;
@@ -156,7 +157,7 @@ public class AppResource {
 	}*/
 
 
-	@POST
+	/*@POST
 	@Path("/setPreference/{profileId}")
 	public Response setPreferenceWithId(
 			@PathParam("profileId") String profileId,
@@ -170,7 +171,7 @@ public class AppResource {
 		//logger.info("setPreferenceWithId="+ profileId +"; pref="+pref.getId());
 		String str = "{'stored':'true'}";
 		return Response.ok(str, MediaType.APPLICATION_JSON).build();
-	}
+	}*/
 
 	@POST
 	@Path("/setPreference")
@@ -178,149 +179,33 @@ public class AppResource {
 			@FormParam("preference") String preference) {
 
 		Gson gson = new Gson();
-		Preference pref = gson.fromJson(preference, Preference.class);
-
-		spopzService.upsertPreference(pref, preference);
+		
+		try{
+			IntermediatePreference pref = gson.fromJson(preference, IntermediatePreference.class);
+			spopzService.upsertPreference(pref, preference);
+		}catch(Exception ex){
+			Preference pref = gson.fromJson(preference, Preference.class);
+			spopzService.upsertPreferencehack(pref, preference);
+		}
+		//spopzService.upsertPreference(pref, preference);
+		
+		/*Preference pref = gson.fromJson(preference, Preference.class);
+		spopzService.upsertPreference(pref, preference);*/
 
 		//logger.info("setPreferenceWithId="+ profileId +"; pref="+pref.getId());
 		String str = "{'stored':'true'}";
 		return Response.ok(str, MediaType.APPLICATION_JSON).build();
 	}
 
-	/*@GET
-	@Path("/getPreference/{profileId}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Preference getPreference(@PathParam("profileId") String profileId) {
-
-		Preference pref = new Preference();
-		List<Map<String, String>> size = new ArrayList<Map<String, String>>();
-		List<Map<String, String>> colors = new ArrayList<Map<String, String>>();
-		List<Map<String, String>> prints = new ArrayList<Map<String, String>>();
-		List<Map<String, String>> luxurybrands = new ArrayList<Map<String, String>>();
-		List<Map<String, String>> hi_Street_Brands = new ArrayList<Map<String, String>>();
-		List<Map<String, String>> fast_fashion_brands = new ArrayList<Map<String, String>>();
-		List<Map<String, String>> indie_designers = new ArrayList<Map<String, String>>();
-		List<Map<String, String>> blogger_pref = new ArrayList<Map<String, String>>();
-
-		//size
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("shirt",  "s");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		size.add(map);
-
-		map = new HashMap<String, String>();
-		map.put("pant",  "m");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		size.add(map);
-
-		map = new HashMap<String, String>();
-		map.put("shoes",  "7");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "N");
-		size.add(map);
-		pref.setSize(size);
-
-		//colors
-		map = new HashMap<String, String>();
-		map.put("color",  "skyblue");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		colors.add(map);
-
-		map = new HashMap<String, String>();
-		map.put("color",  "purple");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		colors.add(map);
-		pref.setColors(colors);
-
-		//prints
-		map = new HashMap<String, String>();
-		map.put("print",  "zebra");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		prints.add(map);
-
-		map = new HashMap<String, String>();
-		map.put("print",  "flowery");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "N");
-		prints.add(map);
-		pref.setPrints(colors);
-
-		//luxury brands
-		map = new HashMap<String, String>();
-		map.put("luxbrand",  "Armani");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		luxurybrands.add(map);
-
-		map = new HashMap<String, String>();
-		map.put("luxbrand",  "Gucci");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "N");
-		luxurybrands.add(map);
-		pref.setLuxurybrands(luxurybrands);
-
-		//hi street brands
-		map = new HashMap<String, String>();
-		map.put("hibrand",  "brand 1");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		hi_Street_Brands.add(map);
-
-		map = new HashMap<String, String>();
-		map.put("hibrand",  "brand 2");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "N");
-		hi_Street_Brands.add(map);
-		pref.setHi_street_brands(hi_Street_Brands);
-
-		//fast street brands
-		map = new HashMap<String, String>();
-		map.put("hibrand",  "brand 1");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		fast_fashion_brands.add(map);
-
-		map = new HashMap<String, String>();
-		map.put("hibrand",  "brand 2");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "N");
-		fast_fashion_brands.add(map);
-		pref.setFast_fashion_brands(fast_fashion_brands);
-
-		//indie designers
-		map = new HashMap<String, String>();
-		map.put("indie",  "sonas jeans");
-		map.put("url",  "http://www.google.com");
-		map.put("selected",  "Y");
-		indie_designers.add(map);
-		pref.setIndie_designers(indie_designers);
-
-		//blogger pref
-		map = new HashMap<String, String>();
-		map.put("url",  "http://www.calvintage.com");
-		map.put("selected",  "Y");
-		blogger_pref.add(map);
-		pref.setBlogger_preferences(blogger_pref);
-
-		pref.setId(profileId);
-
-		return pref;
-	}*/
-	
 	@GET
 	@Path("/getPreference/{profileId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Preferences getPreference(@PathParam("profileId") String profileId) {
-		Preferences pref = spopzService.listPreference(profileId);
+	public PreferenceAsJson getPreference(@PathParam("profileId") String profileId) {
+		PreferenceAsJson pref = spopzService.getPreference(profileId);
 		if(pref != null)
 			return pref;
 		else{
-			return new Preferences();
+			return new PreferenceAsJson();
 		}
 	}
 
@@ -334,7 +219,7 @@ public class AppResource {
 	@Path("/showReport")
 	public String showReport(){
 
-		List<Preferences> listOfPreferences = spopzService.listPreferences();
+		List<PreferenceAsJson> listOfPreferences = spopzService.listPreferences();
 		List<Profile> listOfProfiles = spopzService.listProfiles();
 		List<User> listOfUsers = spopzService.listUsers();  
 		

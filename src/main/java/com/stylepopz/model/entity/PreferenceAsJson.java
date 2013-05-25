@@ -5,13 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class Preferences {
+public class PreferenceAsJson {
 
-	public Preferences() {
+	public PreferenceAsJson() {
 		super();
 	}
 	
-	public Preferences(String id, String prefJson) {
+	public PreferenceAsJson(String id, String prefJson) {
 		super();
 		this.id = id;
 		this.prefJson = prefJson;
@@ -20,7 +20,7 @@ public class Preferences {
 	@Id
 	private String id;
 	
-	@Column(name = "prefJson", nullable = false, length = 2000)
+	@Column(name = "prefJson", nullable = false, length = 20000)
 	private String prefJson;
 	public String getId() {
 		return id;
