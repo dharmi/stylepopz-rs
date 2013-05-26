@@ -4,7 +4,173 @@
  
 	<form action="api/user/setPreference" method="post">
 		<p>
-			json : <textarea  rows="10" cols="150" name="preference">{"id":"4343","size":[{"selected":"Y","url":"http://www.google.com","shirt":"s"},{"pant":"m","selected":"Y","url":"http://www.google.com"},{"shoes":"7","selected":"N","url":"http://www.google.com"}],"colors":[{"selected":"Y","color":"skyblue","url":"http://www.google.com"},{"selected":"Y","color":"purple","url":"http://www.google.com"}],"prints":[{"selected":"Y","color":"skyblue","url":"http://www.google.com"},{"selected":"Y","color":"purple","url":"http://www.google.com"}],"luxurybrands":[{"selected":"Y","luxbrand":"Armani","url":"http://www.google.com"},{"selected":"N","luxbrand":"Gucci","url":"http://www.google.com"}],"hi_street_brands":[{"selected":"Y","hibrand":"brand 1","url":"http://www.google.com"},{"selected":"N","hibrand":"brand 2","url":"http://www.google.com"}],"fast_fashion_brands":[{"selected":"Y","hibrand":"brand 1","url":"http://www.google.com"},{"selected":"N","hibrand":"brand 2","url":"http://www.google.com"}],"indie_designers":[{"selected":"Y","indie":"sonas jeans","url":"http://www.google.com"}],"blogger_preferences":[{"selected":"Y","url":"http://www.calvintage.com"}]}</textarea>
+			json : <textarea  rows="25" cols="150" name="preference">{
+  "id": "100000591379521",
+  "sex": "M",
+  "shirts": [
+    "s",
+    "m"
+  ],
+  "pants": [
+    "s",
+    "m"
+  ],
+  "shoes": [
+    "8",
+    "7"
+  ],
+  "colors": [
+    "skyblue",
+    "purple"
+  ],
+  "prints": [
+    "skyblue",
+    "purple"
+  ],
+  "luxurybrands": [
+    "Armani",
+    "Gucci"
+  ],
+  "hiStreetBrands": [
+    "brand 1",
+    "brand 2"
+  ],
+  "fastFashionBrands": [
+    "brand 1",
+    "brand 2"
+  ],
+  "indieDesigners": [
+    "sonas jeans"
+  ]
+}</textarea>
+		</p>
+		<input type="submit" value="Add Preference" />
+	</form>
+	
+	<form action="api/user/setPreference" method="post">
+		<p>
+			json : <textarea  rows="25" cols="150" name="preference">{
+    "id": "100000591379521",
+    "sizes": 
+        {
+            "shirts": [
+                {
+                    "selected": "N",
+                    "url": "shirts_s.png",
+                    "shirt": "s"
+                },
+                {
+                    "selected": "Y",
+                    "url": "shirts_m.png",
+                    "shirt": "m"
+                }
+            ],
+            "pants": [
+                {
+                    "pant": "s",
+                    "selected": "Y",
+                    "url": "pants1.png"
+                },
+                {
+                    "pant": "m",
+                    "selected": "N",
+                    "url": "pants2.png"
+                }
+            ],
+            "shoes": [
+                {
+                    "shoes": "8",
+                    "selected": "N",
+                    "url": "shoes1.png"
+                },
+                {
+                    "shoes": "7",
+                    "selected": "Y",
+                    "url": "shoes2.png"
+                }
+            ]
+            
+        }
+    ,
+    "colors": [
+        {
+            "selected": "Y",
+            "color": "skyblue",
+            "url": "color_blues.jpg"
+        },
+        {
+            "selected": "Y",
+            "color": "purple",
+            "url": "color_greens.jpg"
+        }
+    ],
+    "prints": [
+        {
+            "selected": "Y",
+            "print": "flowery",
+            "url": "flowery.jpg"
+        },
+        {
+            "selected": "Y",
+            "print": "floral",
+            "url": "floral.jpg"
+        }
+    ],
+    "luxuryBrands": [
+        {
+            "selected": "Y",
+            "luxbrand": "Armani",
+            "url": "luxurybrands.jpg"
+        },
+        {
+            "selected": "N",
+            "luxbrand": "Gucci",
+            "url": "luxurybrands1.jpg"
+        }
+    ],
+    "hiStreetBrands": [
+        {
+            "selected": "Y",
+            "hibrand": "Jimmy Choo",
+            "url": "highstreet.jpg"
+        },
+        {
+            "selected": "N",
+            "hibrand": "Chetlham",
+            "url": "highstreet1.jpg"
+        }
+    ],
+    "fastFashionBrands": [
+        {
+            "selected": "Y",
+            "fastfash": "Foreever 21",
+            "url": "fastfashion.jpg"
+        },
+        {
+            "selected": "N",
+            "fastfash": "ZARA",
+            "url": "fastfashion1.jpg"
+        }
+    ],
+    "indieDesigners": [
+        {
+            "selected": "Y",
+            "indie": "sonas jeans",
+            "url": "indidesigner1.jpg"
+        },
+        {
+            "selected": "N",
+            "indie": "sonas denim",
+            "url": "indidesigner.jpg"
+        }
+    ],
+    "bloggerPreferences": [
+        {
+            "selected": "Y",
+            "url": "floral.jpg"
+        }
+    ]
+}</textarea>
 		</p>
 		<input type="submit" value="Add Preference" />
 	</form>
