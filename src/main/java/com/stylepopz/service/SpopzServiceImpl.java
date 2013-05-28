@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.stylepopz.common.AppUtils;
 import com.stylepopz.model.IntermediatePreference;
 import com.stylepopz.model.Preference;
 import com.stylepopz.model.Sizes;
@@ -61,233 +62,36 @@ public class SpopzServiceImpl implements SpopzService {
 		PreferenceAsJson prefToBePersistedAsJSON = new PreferenceAsJson(pref.getId(), jsonString);
 		PreferenceAsJson existingPrefAsJSON = em.find(PreferenceAsJson.class, pref.getId());
 		Preference existingPref = null;
-		try{
-			existingPref = (new Gson()).fromJson(existingPrefAsJSON.getPrefJson(), Preference.class);
+		/*try{
+			if(existingPrefAsJSON == null){
+				// new user
+				
+			}else{
+				existingPref = (new Gson()).fromJson(existingPrefAsJSON.getPrefJson(), Preference.class);
+			}
 		}catch(Exception ex){
 			logger.info(ex.toString());
-		}
+		}*/
 
 		if(pref != null && existingPrefAsJSON == null){
-			Preference preference = intermediateToPref(pref, existingPref);
-
+			
+			// new user
+			Preference preference = AppUtils.intermediateToPref(pref, existingPref);
 			em.persist(new PreferenceAsJson(preference.getId(), new Gson().toJson(preference)));
 			logger.info("done");
-		}else{	// update
-
-			Preference preference = intermediateToPref(pref, existingPref);
+		}else{	
+			// update : existing user
 			
-			logger.info("intermediate: "+new JSONSerializer().deepSerialize(pref));
+			existingPref = (new Gson()).fromJson(existingPrefAsJSON.getPrefJson(), Preference.class);
+			Preference preference = AppUtils.intermediateToPref(pref, existingPref);
+			
+			/*logger.info("intermediate: "+new JSONSerializer().deepSerialize(pref));
 			logger.info("existing: "+new JSONSerializer().deepSerialize(existingPrefAsJSON));
-			logger.info("new: "+new JSONSerializer().deepSerialize(prefToBePersistedAsJSON));
+			logger.info("new: "+new JSONSerializer().deepSerialize(prefToBePersistedAsJSON));*/
 
 			em.merge(new PreferenceAsJson(preference.getId(), new Gson().toJson(preference)));
 			//em.merge(prefToBePersistedAsJSON);
 			logger.info("done");
-		}
-	}
-
-	private Preference intermediateToPref(IntermediatePreference pref, Preference existingPref) {
-
-		if(existingPref != null){
-			// existing preference, so update
-			Sizes sizes = existingPref.getSizes();
-			
-			List<String> nShirts = pref.getShirts();
-			Sizes oSizes = existingPref.getSizes();
-			List<Map<String, String>> oShirts = oSizes.getShirts();
-			Iterator<Map<String, String>> oIterator = oShirts.iterator();
-			
-			while(oIterator.hasNext()){
-				Map<String, String> oMap = oIterator.next();
-				if(nShirts.contains(oMap.get("shirt"))){
-					logger.info(oMap.get("shirt")+" present with selected="+oMap.get("selected"));
-					String selected = oMap.get("selected")+"";
-					if(selected.equals("N")) 
-						oMap.put("selected", "Y");
-					else
-						oMap.put("selected", "N");
-					//(oShirts.get(oShirts.indexOf("shirt"))).put("shirt", "");
-					
-					logger.info("after : "+oMap.get("shirt")+" present with selected="+oMap.get("selected"));
-					sizes.setShirts(oShirts);
-				}else{
-					logger.info(oMap.get("shirt")+" not present");
-				}
-			}
-			//existingPref.setSizes(sizes);
-			
-			return existingPref;
-		}else{
-			// its a new preference, create one.
-			Preference newPref = new Preference();
-			newPref.setId(pref.getId());
-
-			Sizes oSizes = new Sizes();
-
-			// shirts
-			List<Map<String, String>> oLst = new ArrayList<Map<String, String>>();
-			List<String> iCategory = pref.getShirts();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("shirt", item);
-					oLst.add(oMap);
-				}
-			}
-			oSizes.setShirts(oLst);
-
-			// pants
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getPants();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("pant", item);
-					oLst.add(oMap);
-				}
-			}
-			oSizes.setPants(oLst);
-
-			// shoes
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getShoes();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("shoe", item);
-					oLst.add(oMap);
-				}
-			}
-			oSizes.setShoes(oLst);
-
-			// set sizes
-			newPref.setSizes(oSizes);
-
-			// colors
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getColors();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("color", item);
-					oLst.add(oMap);
-				}
-			}
-			newPref.setColors(oLst);
-
-			// prints
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getPrints();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("print", item);
-					oLst.add(oMap);
-				}
-			}
-			newPref.setPrints(oLst);
-
-			// luxuryBrands
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getLuxurybrands();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("luxbrand", item);
-					oLst.add(oMap);
-				}
-			}
-			newPref.setLuxuryBrands(oLst);
-
-			// hiStreetBrands
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getHiStreetBrands();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("hibrand", item);
-					oLst.add(oMap);
-				}
-			}
-			newPref.setHiStreetBrands(oLst);
-
-			// fastFashionBrands
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getFastFashionBrands();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("fastfash", item);
-					oLst.add(oMap);
-				}
-			}
-			newPref.setFastFashionBrands(oLst);
-
-			// indieDesigners
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getIndieDesigners();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("indie", item);
-					oLst.add(oMap);
-				}
-			}
-			newPref.setIndieDesigners(oLst);
-
-			// bloggerPreferences
-			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getBloggerPreferences();
-			if(iCategory != null){
-				Iterator<String> iIterator = iCategory.iterator();
-				while(iIterator.hasNext()){
-					String item = iIterator.next();
-					Map<String, String> oMap = new HashMap<String, String>();
-					oMap.put("selected", "N"); 
-					oMap.put("url", "");
-					oMap.put("blogger", item);
-					oLst.add(oMap);
-				}
-			}
-			newPref.setBloggerPreferences(oLst);
-
-			return newPref;
 		}
 	}
 
@@ -334,7 +138,13 @@ public class SpopzServiceImpl implements SpopzService {
 		List<PreferenceAsJson> prefList = em.createQuery(c).getResultList();
 		if ( prefList != null && prefList.size() > 0 )
 			return prefList.get(0);
+		//return returnEmptyPreferenceAsJson(profileId);
 		return null;
+	}
+
+	private PreferenceAsJson returnEmptyPreferenceAsJson(String profileId) {
+		String preferenceJson = "{\"id\":\""+profileId+"\",\"sex\":\"M\",\"shirts\":[\"s\",\"m\",\"l\"],\"pants\":[\"s\",\"m\",\"l\"],\"shoes\":[\"7\",\"8\",\"9\"],\"colors\":[\"skyblue\",\"purple\"],\"prints\":[\"flowery\",\"floral\"],\"luxurybrands\":[\"Armani\",\"Gucci\"],\"hiStreetBrands\":[\"Jimmy Choo\",\"Chetlham\"],\"fastFashionBrands\":[\"Foreever 21\",\"ZARA\"],\"indieDesigners\":[\"sonas jeans\",\"sonas denim\"]}";
+		return new PreferenceAsJson(profileId, preferenceJson);
 	}
 
 	@Transactional

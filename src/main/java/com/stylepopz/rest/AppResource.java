@@ -30,6 +30,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyService;
+import com.stylepopz.common.AppUtils;
 import com.stylepopz.model.IntermediatePreference;
 import com.stylepopz.model.Preference;
 import com.stylepopz.model.entity.PreferenceAsJson;
@@ -184,8 +185,9 @@ public class AppResource {
 			IntermediatePreference pref = gson.fromJson(preference, IntermediatePreference.class);
 			spopzService.upsertPreference(pref, preference);
 		}catch(Exception ex){
-			Preference pref = gson.fromJson(preference, Preference.class);
-			spopzService.upsertPreferencehack(pref, preference);
+			logger.error(ex.toString());
+			/*Preference pref = gson.fromJson(preference, Preference.class);
+			spopzService.upsertPreferencehack(pref, preference);*/
 		}
 		//spopzService.upsertPreference(pref, preference);
 		
@@ -197,7 +199,7 @@ public class AppResource {
 		return Response.ok(str, MediaType.APPLICATION_JSON).build();
 	}
 
-	@GET
+	/*@GET
 	@Path("/getPreference/{profileId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public PreferenceAsJson getPreference(@PathParam("profileId") String profileId) {
@@ -206,6 +208,18 @@ public class AppResource {
 			return pref;
 		else{
 			return new PreferenceAsJson();
+		}
+	}*/
+	
+	@GET
+	@Path("/getPreference/{profileId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Preference getPreference(@PathParam("profileId") String profileId) {
+		PreferenceAsJson pref = spopzService.getPreference(profileId);
+		if(pref == null)
+			return AppUtils.getDefaultPreference(profileId);
+		else{
+			return AppUtils.getPreferenceFromJson(pref.getPrefJson());
 		}
 	}
 

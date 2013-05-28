@@ -9,6 +9,7 @@ public class Preference implements DataObject {
 
 	// this id is the account (user.id)
 	String id;
+	String sex;
 	Sizes sizes = new Sizes();
 	List<Map<String, String>> colors = new ArrayList<Map<String, String>>();
 	List<Map<String, String>> prints = new ArrayList<Map<String, String>>();
@@ -44,6 +45,14 @@ public class Preference implements DataObject {
 		this.id = id;
 	}
 	
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
 	public List<Map<String, String>> getColors() {
 		return colors;
 	}
