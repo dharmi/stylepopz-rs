@@ -143,6 +143,13 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/singly-sdk-1.0.0-SNAPSHOT.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>jdiffbot</groupId>
+			<artifactId>jdiffbot</artifactId>
+			<version>1.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/jdiffbot-1.1-SNAPSHOT.jar</systemPath>
+		</dependency>
 		
 		<!--  Swagger APIs -->
 		<!-- <dependency>
