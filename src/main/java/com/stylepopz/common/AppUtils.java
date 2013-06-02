@@ -259,7 +259,7 @@ public class AppUtils {
 
 			// luxuryBrands
 			oLst = new ArrayList<Map<String, String>>();
-			iCategory = pref.getLuxurybrands();
+			iCategory = pref.getLuxuryBrands();
 			if(iCategory != null){
 				Iterator<String> iIterator = iCategory.iterator();
 				while(iIterator.hasNext()){
