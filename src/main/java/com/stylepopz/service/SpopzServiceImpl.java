@@ -37,6 +37,7 @@ public class SpopzServiceImpl implements SpopzService {
 	@PersistenceContext
 	EntityManager em;
 
+	@Transactional
 	public void addUser(User user) {
 
 		User _user = null;
@@ -48,7 +49,7 @@ public class SpopzServiceImpl implements SpopzService {
 			}
 		}
 		if(_user == null) // insert
-		em.persist(user);
+			em.persist(user);
 		else{	// update
 			em.merge(user);
 		}
@@ -65,7 +66,7 @@ public class SpopzServiceImpl implements SpopzService {
 		/*try{
 			if(existingPrefAsJSON == null){
 				// new user
-				
+
 			}else{
 				existingPref = (new Gson()).fromJson(existingPrefAsJSON.getPrefJson(), Preference.class);
 			}
@@ -74,17 +75,17 @@ public class SpopzServiceImpl implements SpopzService {
 		}*/
 
 		if(pref != null && existingPrefAsJSON == null){
-			
+
 			// new user
 			Preference preference = AppUtils.intermediateToPref(pref, existingPref);
 			em.persist(new PreferenceAsJson(preference.getId(), new Gson().toJson(preference)));
 			logger.info("done");
 		}else{	
 			// update : existing user
-			
+
 			existingPref = (new Gson()).fromJson(existingPrefAsJSON.getPrefJson(), Preference.class);
 			Preference preference = AppUtils.intermediateToPref(pref, existingPref);
-			
+
 			/*logger.info("intermediate: "+new JSONSerializer().deepSerialize(pref));
 			logger.info("existing: "+new JSONSerializer().deepSerialize(existingPrefAsJSON));
 			logger.info("new: "+new JSONSerializer().deepSerialize(prefToBePersistedAsJSON));*/

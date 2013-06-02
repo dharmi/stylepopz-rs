@@ -78,7 +78,7 @@ public class AppResource {
 
 		// get the profile and retrieve the access_token
 		String access_token = spopzService.getAccessToken(profileId, "facebook");
-		if(StringUtils.isEmpty(access_token)){
+		if(!StringUtils.hasText(access_token)){
 			throw new NotFoundException("profile Not found");
 		}
 		Map<String, String> postParams = new HashMap<String, String>();
@@ -99,21 +99,8 @@ public class AppResource {
 		JsonObject o = (JsonObject)new JsonParser().parse(output);
 		System.out.println("jsonobject = "+o);
 
-		ObjectMapper mapper = new ObjectMapper();
-		//JsonNode profile = null;
-		//Profile profile = null;
-		//try {
-		//Map<String, Object> userInMap = mapper.readValue(output, new TypeReference<Map<String, Object>>() {});
-		//profile = mapper.readValue(output, JsonNode.class);
-		//dao.insertProfile(profile, "profile");
+		//ObjectMapper mapper = new ObjectMapper();
 		spopzService.insertProfile(o, "profile");
-		/*} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
 
 		return output;
 	}
@@ -180,7 +167,7 @@ public class AppResource {
 			@FormParam("preference") String preference) {
 
 		Gson gson = new Gson();
-		
+
 		try{
 			IntermediatePreference pref = gson.fromJson(preference, IntermediatePreference.class);
 			spopzService.upsertPreference(pref, preference);
@@ -190,7 +177,7 @@ public class AppResource {
 			spopzService.upsertPreferencehack(pref, preference);*/
 		}
 		//spopzService.upsertPreference(pref, preference);
-		
+
 		/*Preference pref = gson.fromJson(preference, Preference.class);
 		spopzService.upsertPreference(pref, preference);*/
 
@@ -210,7 +197,7 @@ public class AppResource {
 			return new PreferenceAsJson();
 		}
 	}*/
-	
+
 	@GET
 	@Path("/getPreference/{profileId}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -236,10 +223,10 @@ public class AppResource {
 		List<PreferenceAsJson> listOfPreferences = spopzService.listPreferences();
 		List<Profile> listOfProfiles = spopzService.listProfiles();
 		List<User> listOfUsers = spopzService.listUsers();  
-		
+
 		return new StringBuffer("Preferences:::").append(new JSONSerializer().deepSerialize(listOfPreferences)).append("Profiles:::").
-		append(new JSONSerializer().deepSerialize(listOfProfiles)).append("Users:::").
-		append(new JSONSerializer().deepSerialize(listOfUsers)).toString();
+				append(new JSONSerializer().deepSerialize(listOfProfiles)).append("Users:::").
+				append(new JSONSerializer().deepSerialize(listOfUsers)).toString();
 	}
 
 

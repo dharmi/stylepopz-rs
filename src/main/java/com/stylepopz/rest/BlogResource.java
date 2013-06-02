@@ -35,7 +35,7 @@ import diffboat.model.Article;
 public class BlogResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(BlogResource.class);
-	private static String diffBotToken = "51af0040f4b45b4fd731606c13459c383";
+	private static String diffBotToken = "5af0040f4b45b4fd731606c13459c383";
 
 	@Autowired
 	HttpClientServiceImpl httpClient;

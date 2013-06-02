@@ -1,37 +1,81 @@
 package com.stylepopz.common.listeners;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
 
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
-public class AppListener implements ApplicationContextInitializer{
+import org.hsqldb.jdbc.JDBCDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	private static int totalActiveSessions;
+/**
+ * Registers and unregisters the hsql JDBC driver.
+ * 
+ * Use only when the ojdbc jar is deployed inside the webapp (not as an
+ * appserver lib)
+ */
+public class AppListener implements ServletContextListener {
 
-	public static int getTotalActiveSession(){
-		return totalActiveSessions;
-	}
+    private static final Logger LOG = LoggerFactory.getLogger(AppListener.class);
+    private Driver driver = null;
 
-	@Override
-	public void initialize(ConfigurableApplicationContext arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Registers the hsql JDBC driver
+     */
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+        this.driver = new JDBCDriver(); // load and instantiate the class
+        boolean skipRegistration = false;
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            Driver driver = drivers.nextElement();
+            if (driver instanceof JDBCDriver) {
+            	JDBCDriver alreadyRegistered = (JDBCDriver) driver;
+                if (alreadyRegistered.getClass() == this.driver.getClass()) {
+                    // same class in the VM already registered itself
+                    skipRegistration = true;
+                    this.driver = alreadyRegistered;
+                    break;
+                }
+            }
+        }
 
-	/*@Override
-	public void sessionCreated(HttpSessionEvent arg0) {
-		totalActiveSessions++;
-		System.out.println("****************sessionCreated - add one session into counter");	
-	}
+        try {
+            if (!skipRegistration) {
+                DriverManager.registerDriver(driver);
+            } else {
+                LOG.debug("driver was registered automatically");
+            }
+            LOG.info(String.format("registered jdbc driver: %s v%d.%d", driver, driver.getMajorVersion(), driver.getMinorVersion()));
+        } catch (SQLException e) {
+            LOG.error("Error registering hsql driver: " + "database  connectivity might be unavailable!", e);
+            throw new RuntimeException(e);
+        }
+    } 
 
-	@Override
-	public void sessionDestroyed(HttpSessionEvent arg0) {
-		totalActiveSessions--;
-		System.out.println("*****************sessionDestroyed - deduct one session from counter");	
-	}	*/
+    /**
+     * Deregisters JDBC driver
+     * 
+     * Prevents Tomcat 7 from complaining about memory leaks.
+     */
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        if (this.driver != null) {
+            try {
+                DriverManager.deregisterDriver(driver);
+                LOG.info(String.format("deregistering jdbc driver: %s", driver));
+            } catch (SQLException e) {
+                LOG.warn(String.format("Error deregistering driver %s", driver), e);
+            }
+            this.driver = null;
+        } else {
+            LOG.warn("No driver to deregister");
+        }
+
+    }
+
 }

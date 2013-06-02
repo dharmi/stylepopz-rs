@@ -3,18 +3,29 @@ package com.stylepopz.model.entity;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import com.stylepopz.model.DataObject;
-
 @Entity
-public class User implements DataObject{
+public class User {
 
+	public User() {
+		super();
+	}
+	
+	public User(String id, String access_token, String socialProfile, String socialProfileId, String code){
+		super();
+		this.id = id;
+		this.access_token = access_token;
+		this.socialProfile = socialProfile;
+		this.socialProfileId = socialProfileId;
+		this.code = code;
+	}
+	
 	// this id is the account id returned by singly
 	@Id
-	String id;
-	String access_token;
-	String socialProfile;
-	String socialProfileId;
-	String code;
+	private String id;
+	private String access_token;
+	private String socialProfile;
+	private String socialProfileId;
+	private String code;
 	
 	public String getId() {
 		return id;
