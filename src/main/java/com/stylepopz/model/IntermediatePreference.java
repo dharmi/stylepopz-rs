@@ -13,7 +13,7 @@ public class IntermediatePreference implements DataObject {
 	List<String> shoes;
 	List<String> colors;
 	List<String> prints;
-	List<String> luxurybrands;
+	List<String> luxuryBrands;
 	List<String> hiStreetBrands;
 	List<String> fastFashionBrands;
 	List<String> indieDesigners;
@@ -61,12 +61,6 @@ public class IntermediatePreference implements DataObject {
 	public void setPrints(List<String> prints) {
 		this.prints = prints;
 	}
-	public List<String> getLuxurybrands() {
-		return luxurybrands;
-	}
-	public void setLuxurybrands(List<String> luxurybrands) {
-		this.luxurybrands = luxurybrands;
-	}
 	public List<String> getHiStreetBrands() {
 		return hiStreetBrands;
 	}
@@ -90,6 +84,12 @@ public class IntermediatePreference implements DataObject {
 	}
 	public void setBloggerPreferences(List<String> bloggerPreferences) {
 		this.bloggerPreferences = bloggerPreferences;
+	}
+	public List<String> getLuxuryBrands() {
+		return luxuryBrands;
+	}
+	public void setLuxuryBrands(List<String> luxuryBrands) {
+		this.luxuryBrands = luxuryBrands;
 	}
 	
 }
