@@ -49,7 +49,7 @@ public class AppUtils {
 				}
 				if(!flg){
 					Map<String, String> _oMap = new HashMap<String, String>();
-					_oMap.put("selected", "Y"); 
+					_oMap.put("selected", "N"); 
 					_oMap.put("url", "tbd.png");
 					_oMap.put("shirt", nShirt);
 					existingPref.getSizes().getShirts().add(_oMap);
